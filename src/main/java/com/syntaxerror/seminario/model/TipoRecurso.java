@@ -13,7 +13,7 @@ public class TipoRecurso {
     private Long tipoRecursoId;
 
     @Column(name = "unidad_id", nullable = false)
-    private Integer unidadId;
+    private Long unidadId;
 
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
@@ -33,11 +33,11 @@ public class TipoRecurso {
         this.tipoRecursoId = tipoRecursoId;
     }
 
-    public Integer getUnidadId() {
+    public Long getUnidadId() {
         return unidadId;
     }
 
-    public void setUnidadId(Integer unidadId) {
+    public void setUnidadId(Long unidadId) {
         this.unidadId = unidadId;
     }
 

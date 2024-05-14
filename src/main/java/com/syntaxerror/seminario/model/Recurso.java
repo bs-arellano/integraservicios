@@ -11,10 +11,10 @@ public class Recurso {
     private Long recursoId;
 
     @Column(name = "unidad_id", nullable = false)
-    private Integer unidadId;
+    private Long unidadId;
 
     @Column(name = "tipo_recurso_id", nullable = false)
-    private Integer tipoRecursoId;
+    private Long tipoRecursoId;
 
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
@@ -31,19 +31,19 @@ public class Recurso {
         this.recursoId = recursoId;
     }
 
-    public Integer getUnidadId() {
+    public Long getUnidadId() {
         return unidadId;
     }
 
-    public void setUnidadId(Integer unidadId) {
+    public void setUnidadId(Long unidadId) {
         this.unidadId = unidadId;
     }
 
-    public Integer getTipoRecursoId() {
+    public Long getTipoRecursoId() {
         return tipoRecursoId;
     }
 
-    public void setTipoRecursoId(Integer tipoRecursoId) {
+    public void setTipoRecursoId(Long tipoRecursoId) {
         this.tipoRecursoId = tipoRecursoId;
     }
 
