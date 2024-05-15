@@ -36,7 +36,7 @@ public class ResourceManager {
     public List<TipoRecurso> getResourceTypes(Long serviceUnitID){
         return tipoRecursoRepository.findByUnidadId(serviceUnitID);
     }
-    public TipoRecurso getResourceTypeByID(Long resourceTypeID){
+    public TipoRecurso getResourceType(Long resourceTypeID){
         return tipoRecursoRepository.findById(resourceTypeID).orElseThrow(() -> new RuntimeException("Tipo de recurso no encontrado"));
     }
     public Recurso createResource(Long serviceUnitID, Long resourceTypeID, String name, String description) {

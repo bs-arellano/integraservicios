@@ -1,5 +1,7 @@
 package com.syntaxerror.seminario.controller;
 
+import com.syntaxerror.seminario.dto.ServiceUnitCreationRequest;
+import com.syntaxerror.seminario.model.UnidadServicio;
 import com.syntaxerror.seminario.service.JwtUtil;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.sql.Time;
+import java.net.URI;
 import java.util.Map;
 
 @RestController
@@ -28,25 +30,10 @@ public class ServiceUnitController {
             if (!decodedToken.get("rol").equals("admin")) {
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
             }
-            serviceUnitManager.createServiceUnit(request.getName(), request.getStartWorkingHours(), request.getEndWorkingHours());
-            return ResponseEntity.ok("Unidad de servicio creada exitosamente!");
+            UnidadServicio unidadServicio = serviceUnitManager.createServiceUnit(request.getName(), request.getStartWorkingHours(), request.getEndWorkingHours());
+            return ResponseEntity.created(new URI("/serviceunit/" + unidadServicio.getUnidadId())).body("Unidad de servicio creada exitosamente!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    public static class ServiceUnitCreationRequest {
-        private String name;
-        private Time startWorkingHours;
-        private Time endWorkingHours;
-        // Getters
-        public String getName() {
-            return name;
-        }
-        public Time getStartWorkingHours() {
-            return startWorkingHours;
-        }
-        public Time getEndWorkingHours() {
-            return endWorkingHours;
         }
     }
 }

@@ -6,6 +6,7 @@ import com.syntaxerror.seminario.model.UsuarioMongo;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -75,5 +76,43 @@ public class Authentication {
     //Checks if the email has the correct format
     public boolean validateEmail(String email) {
         return email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    public void UpdateUser(Long userID, Optional<String> username, Optional<String> email, Optional<String> password) {
+        // Retrieve the user
+        Usuario usuario = usuarioRepository.findById(userID)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Update username if present
+        username.ifPresent(usuario::setNombre);
+
+        // Update email if present and valid
+        email.ifPresent(e -> {
+            if (!validateEmail(e)) {
+                throw new RuntimeException("Invalid email");
+            }
+            UsuarioMongo usuarioMongo = usuarioMongoRepository.findById(userID.toString())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            usuarioMongo.setEmail(e);
+            usuarioMongoRepository.save(usuarioMongo);
+        });
+
+        // Update password if present and valid
+        password.ifPresent(p -> {
+            if (!validatePassword(p)) {
+                throw new RuntimeException("Invalid password");
+            }
+            UsuarioMongo usuarioMongo = usuarioMongoRepository.findById(userID.toString())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            usuarioMongo.setPassword(passwordEncoder.encode(p));
+            usuarioMongoRepository.save(usuarioMongo);
+        });
+
+        // Save the updated user
+        usuarioRepository.save(usuario);
+    }
+
+    public boolean validateRequest(String jwt, Long id) {
+        Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+        return decodedToken.get("rol").equals("admin") || decodedToken.get("id").equals(id.toString());
     }
 }

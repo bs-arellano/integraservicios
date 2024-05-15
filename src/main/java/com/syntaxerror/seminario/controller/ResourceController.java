@@ -1,5 +1,8 @@
 package com.syntaxerror.seminario.controller;
 
+import com.syntaxerror.seminario.dto.ResourceCreationRequest;
+import com.syntaxerror.seminario.dto.ResourceTypeCreationRequest;
+import com.syntaxerror.seminario.model.Recurso;
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.service.JwtUtil;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
@@ -7,9 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.syntaxerror.seminario.service.ResourceManager;
 
+import java.net.URI;
 import java.sql.Time;
-import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,16 +22,12 @@ public class ResourceController {
         this.resourceManager = resourceManager;
         this.serviceUnitManager = serviceUnitManager;
     }
-    //Health check
-    @GetMapping("/health")
-    public ResponseEntity<String> healthCheck(){
-        return ResponseEntity.ok("Resource controller is up and running");
-    }
 
     //POST method for resource type creation
     @PostMapping("/resourcetype")
-    public ResponseEntity<String> createResourceType(@RequestBody ResourceTypeCreationRequest request, @RequestHeader("Authorization") String jwt){
+    public ResponseEntity<String> createResourceType(@RequestBody ResourceTypeCreationRequest request, @RequestHeader("Authorization") String authHeader){
         try {
+            String jwt = authHeader.replace("Bearer ", "");
             //Validates request
             if(!validateRequest(jwt, request.getServiceUnitID())){
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
@@ -38,49 +36,43 @@ public class ResourceController {
             String name = request.getName();
             String description = request.getDescription();
             Time minLoanTime = request.getMinLoanTime();
-            resourceManager.createResourceType(serviceUnitID, name, description, minLoanTime);
-            return ResponseEntity.ok("Tipo de recurso creado exitosamente!");
+            TipoRecurso tipoRecurso = resourceManager.createResourceType(serviceUnitID, name, description, minLoanTime);
+            return ResponseEntity.created(new URI("/resourcetype/" + tipoRecurso.getTipoRecursoId())).body("Tipo de recurso creado exitosamente!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    //Health check 2
+    //GET method for resource types by service unit
     @GetMapping("/resourcetypes")
-    public ResponseEntity<?> getResourceTypes(@RequestHeader("x-authorization-token") String jwt, @RequestParam("service-unit") Long serviceUnitID){
-        /*return ResponseEntity.ok("token: "+jwt+"\n"+"serviceUnitID: "+serviceUnitID);
-    }*/
-        System.out.println("token: "+jwt+"\n"+"serviceUnitID: "+serviceUnitID);
+    public ResponseEntity<?> getResourceTypes(@RequestHeader("Authorization") String authHeader, @RequestParam("service-unit") Long serviceUnitID){
         try {
-            System.out.println(jwt);
+            String jwt = authHeader.replace("Bearer ", "");
             //Validates request
             if(!validateRequest(jwt, serviceUnitID)){
-                System.out.println("Usuario no autorizado para realizar esta acción");
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
             }
             return ResponseEntity.ok(resourceManager.getResourceTypes(serviceUnitID));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
     //POST method for resource creation
     @PostMapping("/resource")
-    public ResponseEntity<String> createResource(@RequestBody ResourceCreationRequest request, @RequestHeader("Authorization") String jwt){
+    public ResponseEntity<String> createResource(@RequestBody ResourceCreationRequest request, @RequestHeader("Authorization") String authHeader){
         try {
+            String jwt = authHeader.replace("Bearer ", "");
             //Validates request
-            System.out.println(jwt);
             if(!validateRequest(jwt, request.getServiceUnitID())){
-                System.out.println("Usuario no autorizado para realizar esta acción");
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
             }
             Long serviceUnitID = request.getServiceUnitID();
             Long resourceTypeID = request.getResourceTypeID();
             String name = request.getName();
             String description = request.getDescription();
-            resourceManager.createResource(serviceUnitID, resourceTypeID, name, description);
-            return ResponseEntity.ok("Recurso creado exitosamente!");
+            Recurso recurso = resourceManager.createResource(serviceUnitID, resourceTypeID, name, description);
+            return ResponseEntity.created(new URI("/resource/" + recurso.getRecursoId())).body("Recurso creado exitosamente!");
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -94,44 +86,5 @@ public class ResourceController {
             return serviceUnitManager.checkEmployee(Long.parseLong(decodedToken.get("id")), serviceUnitID);
         }
         return true;
-    }
-
-    public static class ResourceTypeCreationRequest {
-        private Long serviceUnitID;
-        private String name;
-        private String description;
-        private Time minLoanTime;
-        // Getters
-        public Long getServiceUnitID() {
-            return serviceUnitID;
-        }
-        public String getName() {
-            return name;
-        }
-        public String getDescription() {
-            return description;
-        }
-        public Time getMinLoanTime() {
-            return minLoanTime;
-        }
-    }
-    public static class ResourceCreationRequest {
-        private Long serviceUnitID;
-        private Long resourceTypeID;
-        private String name;
-        private String description;
-        // Getters
-        public Long getServiceUnitID() {
-            return serviceUnitID;
-        }
-        public Long getResourceTypeID() {
-            return resourceTypeID;
-        }
-        public String getName() {
-            return name;
-        }
-        public String getDescription() {
-            return description;
-        }
     }
 }
