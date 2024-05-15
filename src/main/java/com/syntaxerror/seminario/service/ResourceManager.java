@@ -9,7 +9,6 @@ import com.syntaxerror.seminario.repository.UnidadServicioRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
-import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -33,12 +32,16 @@ public class ResourceManager {
         tipoRecurso.setTiempoMinimoPrestamo(minLoanTime);
         return tipoRecursoRepository.save(tipoRecurso);
     }
-    public List<TipoRecurso> getResourceTypes(Long serviceUnitID){
-        return tipoRecursoRepository.findByUnidadId(serviceUnitID);
-    }
     public TipoRecurso getResourceType(Long resourceTypeID){
         return tipoRecursoRepository.findById(resourceTypeID).orElseThrow(() -> new RuntimeException("Tipo de recurso no encontrado"));
     }
+    public List<TipoRecurso> getResourceTypes() {
+        return tipoRecursoRepository.findAll();
+    }
+    public List<TipoRecurso> getServiceUnitResourceTypes(Long serviceUnitID){
+        return tipoRecursoRepository.findByUnidadId(serviceUnitID);
+    }
+
     public Recurso createResource(Long serviceUnitID, Long resourceTypeID, String name, String description) {
         UnidadServicio serviceUnit = unidadServicioRepository.findById(serviceUnitID).orElseThrow(() -> new RuntimeException("Unidad de servicio no encontrada"));
         TipoRecurso resourceType = tipoRecursoRepository.findById(resourceTypeID).orElseThrow(() -> new RuntimeException("Tipo de recurso no encontrado"));
@@ -52,10 +55,13 @@ public class ResourceManager {
     public Recurso getResource(Long resourceID){
         return recursoRepository.findById(resourceID).orElseThrow(() -> new RuntimeException("Recurso no encontrado"));
     }
-    public Recurso getResourceByServiceUnit(Long serviceUnitID){
+    public List<Recurso> getResourceByServiceUnit(Long serviceUnitID){
         return recursoRepository.findByUnidadId(serviceUnitID);
     }
-    public Recurso getResourceByType(Long resourceTypeID){
+    public List<Recurso> getResourceByType(Long resourceTypeID){
         return recursoRepository.findByTipoRecursoId(resourceTypeID);
+    }
+    public List<Recurso> getAllResources() {
+        return recursoRepository.findAll();
     }
 }

@@ -43,16 +43,34 @@ public class ResourceController {
         }
     }
 
-    //GET method for resource types by service unit
-    @GetMapping("/resourcetypes")
-    public ResponseEntity<?> getResourceTypes(@RequestHeader("Authorization") String authHeader, @RequestParam("service-unit") Long serviceUnitID){
+    //GET method for all resource types
+    @GetMapping("/resourcetype")
+    public ResponseEntity<?> getResourceTypes(@RequestHeader("Authorization") String authHeader){
         try {
             String jwt = authHeader.replace("Bearer ", "");
-            //Validates request
-            if(!validateRequest(jwt, serviceUnitID)){
-                return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
-            }
-            return ResponseEntity.ok(resourceManager.getResourceTypes(serviceUnitID));
+            return ResponseEntity.ok(resourceManager.getResourceTypes());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    //GET method for resource type by ID
+    @GetMapping("/resourcetype/{id}")
+    public ResponseEntity<?> getResourceTypeByID(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            return ResponseEntity.ok(resourceManager.getResourceType(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    //GET method for resource types by service unit
+    @GetMapping("/serviceunit/{service-unit-id}/resourcetype")
+    public ResponseEntity<?> getServiceUnitResourceTypes(@RequestHeader("Authorization") String authHeader, @PathVariable("service-unit-id") Long serviceUnitID){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            return ResponseEntity.ok(resourceManager.getServiceUnitResourceTypes(serviceUnitID));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -76,6 +94,51 @@ public class ResourceController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    //GET method for all resources
+    @GetMapping("/resource")
+    public ResponseEntity<?> getResources(@RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+            return ResponseEntity.ok(resourceManager.getAllResources());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    //GET method for resource by ID
+    @GetMapping("/resource/{id}")
+    public ResponseEntity<?> getResourceByID(@RequestHeader("Authorization") String authHeader, @PathVariable Long id){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            return ResponseEntity.ok(resourceManager.getResource(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    //GET method for resources by service unit
+    @GetMapping("/serviceunit/{service-unit-id}/resource")
+    public ResponseEntity<?> getResourceByServiceUnit(@RequestHeader("Authorization") String authHeader, @PathVariable("service-unit-id") Long serviceUnitID){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            return ResponseEntity.ok(resourceManager.getResourceByServiceUnit(serviceUnitID));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    //GET method for resources by type
+    @GetMapping("/resourcetype/{resource-type-id}/resource")
+    public ResponseEntity<?> getResourceByType(@RequestHeader("Authorization") String authHeader, @PathVariable("resource-type-id") Long resourceTypeID){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            return ResponseEntity.ok(resourceManager.getResourceByType(resourceTypeID));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 

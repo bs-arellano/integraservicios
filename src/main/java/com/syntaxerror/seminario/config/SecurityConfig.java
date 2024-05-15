@@ -13,6 +13,6 @@ public class SecurityConfig {
     }
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/health", "/signup", "/signin", "/resourcetypes", "/resource");
+        return (web) -> web.ignoring().requestMatchers("/**");
     }
 }

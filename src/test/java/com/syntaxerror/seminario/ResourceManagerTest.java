@@ -21,7 +21,7 @@ public class ResourceManagerTest {
     @InjectMocks
     private ResourceManager resourceManager;
     @Test
-    public void GetResourceTypesTest(){
+    public void GetServiceUnitResourceTypesTest(){
         // Arrange
         TipoRecurso proyector = new TipoRecurso();
         proyector.setTipoRecursoId(1L);
@@ -42,7 +42,7 @@ public class ResourceManagerTest {
         List<TipoRecurso> expected = Arrays.asList(proyector, aula);
 
         // Act
-        List<TipoRecurso> actual = resourceManager.getResourceTypes(1L);
+        List<TipoRecurso> actual = resourceManager.getServiceUnitResourceTypes(1L);
         // Assert
         assertEquals(expected, actual);
     }
