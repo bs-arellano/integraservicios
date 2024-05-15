@@ -3,6 +3,7 @@ package com.syntaxerror.seminario.model;
 import jakarta.persistence.*;
 
 import java.sql.Time;
+import java.time.Duration;
 
 @Entity
 @Table(name = "\"Tipo_Recurso\"")

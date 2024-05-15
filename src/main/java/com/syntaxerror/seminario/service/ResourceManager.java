@@ -9,6 +9,8 @@ import com.syntaxerror.seminario.repository.UnidadServicioRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Time;
+import java.time.Duration;
+import java.util.List;
 
 @Service
 public class ResourceManager {
@@ -31,7 +33,7 @@ public class ResourceManager {
         tipoRecurso.setTiempoMinimoPrestamo(minLoanTime);
         return tipoRecursoRepository.save(tipoRecurso);
     }
-    public TipoRecurso getResourceTypes(Long serviceUnitID){
+    public List<TipoRecurso> getResourceTypes(Long serviceUnitID){
         return tipoRecursoRepository.findByUnidadId(serviceUnitID);
     }
     public TipoRecurso getResourceTypeByID(Long resourceTypeID){

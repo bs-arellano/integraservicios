@@ -1,5 +1,6 @@
 package com.syntaxerror.seminario.controller;
 
+import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.service.JwtUtil;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import com.syntaxerror.seminario.service.ResourceManager;
 
 import java.sql.Time;
+import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,6 +20,12 @@ public class ResourceController {
         this.resourceManager = resourceManager;
         this.serviceUnitManager = serviceUnitManager;
     }
+    //Health check
+    @GetMapping("/health")
+    public ResponseEntity<String> healthCheck(){
+        return ResponseEntity.ok("Resource controller is up and running");
+    }
+
     //POST method for resource type creation
     @PostMapping("/resourcetype")
     public ResponseEntity<String> createResourceType(@RequestBody ResourceTypeCreationRequest request, @RequestHeader("Authorization") String jwt){
@@ -36,12 +45,34 @@ public class ResourceController {
         }
     }
 
+    //Health check 2
+    @GetMapping("/resourcetypes")
+    public ResponseEntity<?> getResourceTypes(@RequestHeader("x-authorization-token") String jwt, @RequestParam("service-unit") Long serviceUnitID){
+        /*return ResponseEntity.ok("token: "+jwt+"\n"+"serviceUnitID: "+serviceUnitID);
+    }*/
+        System.out.println("token: "+jwt+"\n"+"serviceUnitID: "+serviceUnitID);
+        try {
+            System.out.println(jwt);
+            //Validates request
+            if(!validateRequest(jwt, serviceUnitID)){
+                System.out.println("Usuario no autorizado para realizar esta acción");
+                return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
+            }
+            return ResponseEntity.ok(resourceManager.getResourceTypes(serviceUnitID));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     //POST method for resource creation
     @PostMapping("/resource")
     public ResponseEntity<String> createResource(@RequestBody ResourceCreationRequest request, @RequestHeader("Authorization") String jwt){
         try {
             //Validates request
+            System.out.println(jwt);
             if(!validateRequest(jwt, request.getServiceUnitID())){
+                System.out.println("Usuario no autorizado para realizar esta acción");
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
             }
             Long serviceUnitID = request.getServiceUnitID();
@@ -51,6 +82,7 @@ public class ResourceController {
             resourceManager.createResource(serviceUnitID, resourceTypeID, name, description);
             return ResponseEntity.ok("Recurso creado exitosamente!");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
