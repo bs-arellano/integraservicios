@@ -86,7 +86,7 @@ public class ServiceUnitManager {
 
     //Get employee by id
     public Empleado getEmployeeById(Long employeeId) {
-        return empleadoRepository.findByEmpleadoId(employeeId);
+        return empleadoRepository.findById(employeeId).orElseThrow(()-> new RuntimeException("Empleado no encontrado"));
     }
 
     //Validate manager request
