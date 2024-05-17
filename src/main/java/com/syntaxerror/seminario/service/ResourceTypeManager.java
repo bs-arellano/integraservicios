@@ -1,7 +1,10 @@
 package com.syntaxerror.seminario.service;
 
+import com.syntaxerror.seminario.model.DiaSemana;
+import com.syntaxerror.seminario.model.HorarioDisponibilidad;
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.model.UnidadServicio;
+import com.syntaxerror.seminario.repository.HorarioDisponibilidadRepository;
 import com.syntaxerror.seminario.repository.TipoRecursoRepository;
 import com.syntaxerror.seminario.repository.UnidadServicioRepository;
 import org.springframework.stereotype.Service;
@@ -13,9 +16,11 @@ import java.util.List;
 public class ResourceTypeManager {
     private final TipoRecursoRepository tipoRecursoRepository;
     private final UnidadServicioRepository unidadServicioRepository;
-    public ResourceTypeManager(TipoRecursoRepository tipoRecursoRepository, UnidadServicioRepository unidadServicioRepository){
+    private final HorarioDisponibilidadRepository horarioDisponibilidadRepository;
+    public ResourceTypeManager(TipoRecursoRepository tipoRecursoRepository, UnidadServicioRepository unidadServicioRepository, HorarioDisponibilidadRepository horarioDisponibilidadRepository ) {
         this.tipoRecursoRepository = tipoRecursoRepository;
         this.unidadServicioRepository = unidadServicioRepository;
+        this.horarioDisponibilidadRepository = horarioDisponibilidadRepository;
     }
     public TipoRecurso createResourceType(Long serviceUnitID, String name, String description, Time minLoanTime) {
         UnidadServicio serviceUnit = unidadServicioRepository.findById(serviceUnitID).orElseThrow(() -> new RuntimeException("Unidad de servicio no encontrada"));
@@ -34,5 +39,50 @@ public class ResourceTypeManager {
     }
     public List<TipoRecurso> getServiceUnitResourceTypes(Long serviceUnitID){
         return tipoRecursoRepository.findByUnidadId(serviceUnitID);
+    }
+
+    //Assigns a schedule to a resource type
+    public HorarioDisponibilidad assignSchedule(Long resourceTypeID, DiaSemana dayOfWeek, Time startTime, Time endTime){
+        TipoRecurso resourceType = tipoRecursoRepository.findById(resourceTypeID).orElseThrow(() -> new RuntimeException("Tipo de recurso no encontrado"));
+        //Validates that the start time is before the end time
+        if(startTime.after(endTime)){
+            throw new RuntimeException("La hora de inicio debe ser antes de la hora de fin");
+        }
+        //Checks if the schedule is already assigned for that day
+        List<HorarioDisponibilidad> schedules = horarioDisponibilidadRepository.findByTipoRecursoId(resourceType.getTipoRecursoId());
+        for(HorarioDisponibilidad schedule : schedules){
+            if(schedule.getDiaSemana().equals(dayOfWeek)){
+                //Updated the schedule
+                schedule.setHoraInicio(startTime);
+                schedule.setHoraFin(endTime);
+                return horarioDisponibilidadRepository.save(schedule);
+            }
+        }
+        //Creates a new schedule
+        HorarioDisponibilidad schedule = new HorarioDisponibilidad();
+        schedule.setTipoRecursoId(resourceType.getTipoRecursoId());
+        schedule.setDiaSemana(dayOfWeek);
+        schedule.setHoraInicio(startTime);
+        schedule.setHoraFin(endTime);
+        return horarioDisponibilidadRepository.save(schedule);
+    }
+    //Gets all schedules for a resource type
+    public List<HorarioDisponibilidad> getResourceTypeSchedules(Long resourceTypeID){
+        return horarioDisponibilidadRepository.findByTipoRecursoId(resourceTypeID);
+    }
+    //Gets a schedule by ID
+    public HorarioDisponibilidad getSchedule(Long scheduleID){
+        return horarioDisponibilidadRepository.findById(scheduleID).orElseThrow(() -> new RuntimeException("Horario no encontrado"));
+    }
+    //Gets a schedule by day and resource type
+    public HorarioDisponibilidad getScheduleByDay(Long resourceTypeID, DiaSemana dayOfWeek){
+        TipoRecurso resourceType = tipoRecursoRepository.findById(resourceTypeID).orElseThrow(() -> new RuntimeException("Tipo de recurso no encontrado"));
+        List<HorarioDisponibilidad> schedules = horarioDisponibilidadRepository.findByTipoRecursoId(resourceType.getTipoRecursoId());
+        for(HorarioDisponibilidad schedule : schedules){
+            if(schedule.getDiaSemana().equals(dayOfWeek)){
+                return schedule;
+            }
+        }
+        return null;
     }
 }

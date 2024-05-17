@@ -1,6 +1,9 @@
 package com.syntaxerror.seminario.controller;
 
 import com.syntaxerror.seminario.dto.ResourceTypeCreationRequest;
+import com.syntaxerror.seminario.dto.ScheduleCreationRequest;
+import com.syntaxerror.seminario.model.DiaSemana;
+import com.syntaxerror.seminario.model.HorarioDisponibilidad;
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.service.ResourceTypeManager;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
@@ -71,4 +74,62 @@ public class ResourceTypeController {
         }
     }
 
+    //POST method for assigning a schedule to a resource type
+    @PostMapping("/resourcetype/{id}/schedule")
+    public ResponseEntity<String> assignSchedule(@PathVariable Long id, @RequestBody ScheduleCreationRequest request, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            TipoRecurso tipoRecurso = resourceTypeManager.getResourceType(id);
+
+            //Validates request
+            if(!serviceUnitManager.validateRequest(jwt, tipoRecurso.getUnidadId())) {
+                return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
+            }
+
+            HorarioDisponibilidad horarioDisponibilidad = resourceTypeManager.assignSchedule(id, request.getDayOfWeek(), request.getStartTime(), request.getEndTime());
+            return ResponseEntity.created(new URI("/resourcetype/" + id + "/schedule/" + horarioDisponibilidad.getHorarioDisponibilidadId())).body("Horario asignado exitosamente!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    //GET method for all schedules of a resource type
+    @GetMapping("/resourcetype/{id}/schedule")
+    public ResponseEntity<?> getResourceTypeSchedules(@PathVariable Long id, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            return ResponseEntity.ok(resourceTypeManager.getResourceTypeSchedules(id));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    //GET method for a schedule by ID
+    @GetMapping("/resourcetype/{id}/schedule/{schedule-id}")
+    public ResponseEntity<?> getSchedule(@PathVariable Long id, @PathVariable("schedule-id") Long scheduleID, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            TipoRecurso tipoRecurso = resourceTypeManager.getResourceType(id);
+            //Validates request
+            if(!serviceUnitManager.validateRequest(jwt, tipoRecurso.getUnidadId())) {
+                return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
+            }
+            return ResponseEntity.ok(resourceTypeManager.getSchedule(scheduleID));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+    //GET method for a schedule by day and resource type
+    @GetMapping("/resourcetype/{id}/schedule/day/{day}")
+    public ResponseEntity<?> getScheduleByDay(@PathVariable Long id, @PathVariable DiaSemana day, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            TipoRecurso tipoRecurso = resourceTypeManager.getResourceType(id);
+            //Validates request
+            if(!serviceUnitManager.validateRequest(jwt, tipoRecurso.getUnidadId())) {
+                return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
+            }
+            return ResponseEntity.ok(resourceTypeManager.getScheduleByDay(id, day));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

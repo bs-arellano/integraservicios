@@ -13,7 +13,7 @@ public class HorarioDisponibilidad {
     private Long horarioDisponibilidadId;
 
     @Column(name = "tipo_recurso_id", nullable = false)
-    private Integer tipoRecursoId;
+    private Long tipoRecursoId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "dia_semana", nullable = false)
@@ -34,11 +34,11 @@ public class HorarioDisponibilidad {
         this.horarioDisponibilidadId = horarioDisponibilidadId;
     }
 
-    public Integer getTipoRecursoId() {
+    public Long getTipoRecursoId() {
         return tipoRecursoId;
     }
 
-    public void setTipoRecursoId(Integer tipoRecursoId) {
+    public void setTipoRecursoId(Long tipoRecursoId) {
         this.tipoRecursoId = tipoRecursoId;
     }
 
