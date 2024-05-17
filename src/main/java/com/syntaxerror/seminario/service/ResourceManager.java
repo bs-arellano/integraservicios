@@ -23,24 +23,6 @@ public class ResourceManager {
         this.tipoRecursoRepository = tipoRecursoRepository;
         this.recursoRepository = recursoRepository;
     }
-    public TipoRecurso createResourceType(Long serviceUnitID, String name, String description, Time minLoanTime) {
-        UnidadServicio serviceUnit = unidadServicioRepository.findById(serviceUnitID).orElseThrow(() -> new RuntimeException("Unidad de servicio no encontrada"));
-        TipoRecurso tipoRecurso = new TipoRecurso();
-        tipoRecurso.setUnidadId(serviceUnit.getUnidadId());
-        tipoRecurso.setNombre(name);
-        tipoRecurso.setDescripcion(description);
-        tipoRecurso.setTiempoMinimoPrestamo(minLoanTime);
-        return tipoRecursoRepository.save(tipoRecurso);
-    }
-    public TipoRecurso getResourceType(Long resourceTypeID){
-        return tipoRecursoRepository.findById(resourceTypeID).orElseThrow(() -> new RuntimeException("Tipo de recurso no encontrado"));
-    }
-    public List<TipoRecurso> getResourceTypes() {
-        return tipoRecursoRepository.findAll();
-    }
-    public List<TipoRecurso> getServiceUnitResourceTypes(Long serviceUnitID){
-        return tipoRecursoRepository.findByUnidadId(serviceUnitID);
-    }
 
     public Recurso createResource(Long serviceUnitID, Long resourceTypeID, String name, String description) {
         UnidadServicio serviceUnit = unidadServicioRepository.findById(serviceUnitID).orElseThrow(() -> new RuntimeException("Unidad de servicio no encontrada"));
