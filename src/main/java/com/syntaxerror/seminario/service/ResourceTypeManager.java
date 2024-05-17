@@ -48,6 +48,11 @@ public class ResourceTypeManager {
         if(startTime.after(endTime)){
             throw new RuntimeException("La hora de inicio debe ser antes de la hora de fin");
         }
+        //Validates that the schedule is within the service unit's working hours
+        UnidadServicio serviceUnit = unidadServicioRepository.findById(resourceType.getUnidadId()).orElseThrow(() -> new RuntimeException("Unidad de servicio no encontrada"));
+        if(startTime.before(serviceUnit.getHorarioLaboralInicio()) || endTime.after(serviceUnit.getHorarioLaboralFin())){
+            throw new RuntimeException("El horario debe estar dentro del horario de atención de la unidad de servicio");
+        }
         //Checks if the schedule is already assigned for that day
         List<HorarioDisponibilidad> schedules = horarioDisponibilidadRepository.findByTipoRecursoId(resourceType.getTipoRecursoId());
         for(HorarioDisponibilidad schedule : schedules){
