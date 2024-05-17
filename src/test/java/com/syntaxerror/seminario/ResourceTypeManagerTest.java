@@ -2,7 +2,7 @@ package com.syntaxerror.seminario;
 
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.repository.TipoRecursoRepository;
-import com.syntaxerror.seminario.service.ResourceManager;
+import com.syntaxerror.seminario.service.ResourceTypeManager;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -15,11 +15,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @SpringBootTest
-public class ResourceManagerTest {
+public class ResourceTypeManagerTest {
     @Mock
     private TipoRecursoRepository tipoRecursoRepository;
     @InjectMocks
-    private ResourceManager resourceManager;
+    private ResourceTypeManager resourceTypeManager;
     @Test
     public void GetServiceUnitResourceTypesTest(){
         // Arrange
@@ -42,7 +42,7 @@ public class ResourceManagerTest {
         List<TipoRecurso> expected = Arrays.asList(proyector, aula);
 
         // Act
-        List<TipoRecurso> actual = resourceManager.getServiceUnitResourceTypes(1L);
+        List<TipoRecurso> actual = resourceTypeManager.getServiceUnitResourceTypes(1L);
         // Assert
         assertEquals(expected, actual);
     }
