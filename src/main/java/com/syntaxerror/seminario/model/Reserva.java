@@ -14,10 +14,10 @@ public class Reserva {
     private Long reservaId;
 
     @Column(name = "usuario_id", nullable = false)
-    private Integer usuarioId;
+    private Long usuarioId;
 
     @Column(name = "recurso_id", nullable = false)
-    private Integer recursoId;
+    private Long recursoId;
 
     @Column(name = "fecha_reserva", nullable = false)
     private Date fechaReserva;
@@ -40,19 +40,19 @@ public class Reserva {
         this.reservaId = reservaId;
     }
 
-    public Integer getUsuarioId() {
+    public Long getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(Integer usuarioId) {
+    public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
     }
 
-    public Integer getRecursoId() {
+    public Long getRecursoId() {
         return recursoId;
     }
 
-    public void setRecursoId(Integer recursoId) {
+    public void setRecursoId(Long recursoId) {
         this.recursoId = recursoId;
     }
 
