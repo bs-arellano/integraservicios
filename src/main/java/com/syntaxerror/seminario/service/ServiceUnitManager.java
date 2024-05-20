@@ -19,11 +19,13 @@ public class ServiceUnitManager {
     private final UnidadServicioRepository unidadServicioRepository;
     private final UsuarioRepository usuarioRepository;
     private final EmpleadoRepository empleadoRepository;
+    private final JwtUtil jwtUtil;
 
-    public ServiceUnitManager(UnidadServicioRepository unidadServicioRepository, UsuarioRepository usuarioRepository, EmpleadoRepository empleadoRepository) {
+    public ServiceUnitManager(UnidadServicioRepository unidadServicioRepository, UsuarioRepository usuarioRepository, EmpleadoRepository empleadoRepository, JwtUtil jwtUtil) {
         this.unidadServicioRepository = unidadServicioRepository;
         this.usuarioRepository = usuarioRepository;
         this.empleadoRepository = empleadoRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     //Creates a new service unit
@@ -73,7 +75,7 @@ public class ServiceUnitManager {
         if (serviceUnitEmployees.isEmpty()){
             return Optional.empty();
         }
-        return Optional.of(serviceUnitEmployees.getFirst());
+        return Optional.of(serviceUnitEmployees.get(0));
     }
 
     //Gets all active employees of a service unit
@@ -91,7 +93,7 @@ public class ServiceUnitManager {
 
     //Validate manager request
     public boolean validateRequest(String token, Long serviceUnitID){
-        Map<String, String> decodedToken = JwtUtil.decodeToken(token);
+        Map<String, String> decodedToken = jwtUtil.decodeToken(token);
         //Checks if the user is an admin or is an employee of the service unit
         if (!decodedToken.get("rol").equals("admin")) {
             Empleado empleado = checkActiveEmployee(Long.parseLong(decodedToken.get("id")), serviceUnitID).orElse(null);

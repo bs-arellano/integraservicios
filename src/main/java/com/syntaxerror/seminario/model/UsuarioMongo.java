@@ -1,9 +1,15 @@
 package com.syntaxerror.seminario.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "Usuarios")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UsuarioMongo {
     @Id
     private String id;
