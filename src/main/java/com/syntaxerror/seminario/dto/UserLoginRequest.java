@@ -1,13 +1,11 @@
 package com.syntaxerror.seminario.dto;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class UserLoginRequest {
     private String username;
     private String password;
-    // Getters
-    public String getUsername() {
-        return username;
-    }
-    public String getPassword() {
-        return password;
-    }
 }

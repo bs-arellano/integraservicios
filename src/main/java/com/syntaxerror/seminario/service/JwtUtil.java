@@ -32,7 +32,7 @@ public class JwtUtil {
     }
 
     //JWT Generation
-    public static String generateToken(String id, String rol) {
+    public String generateToken(String id, String rol) {
         return Jwts.builder()
                 .subject(id)
                 .claim("rol", rol)
@@ -42,7 +42,7 @@ public class JwtUtil {
                 .compact();
     }
     //JWT Decoding
-    public static Map<String, String> decodeToken(String token) {
+    public  Map<String, String> decodeToken(String token) {
         Claims claims =  Jwts.parser()
                 .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
@@ -57,5 +57,4 @@ public class JwtUtil {
         result.put("rol", claims.get("rol", String.class));
         return result;
     }
-
 }
