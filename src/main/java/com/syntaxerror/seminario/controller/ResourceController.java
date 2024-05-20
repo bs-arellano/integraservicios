@@ -19,10 +19,12 @@ import java.util.Map;
 @RestController
 public class ResourceController {
     private final ResourceManager resourceManager;
+    private final JwtUtil jwtUtil;
 
     private final ServiceUnitManager serviceUnitManager;
-    public ResourceController(ResourceManager resourceManager, ServiceUnitManager serviceUnitManager) {
+    public ResourceController(ResourceManager resourceManager, JwtUtil jwtUtil, ServiceUnitManager serviceUnitManager) {
         this.resourceManager = resourceManager;
+        this.jwtUtil = jwtUtil;
         this.serviceUnitManager = serviceUnitManager;
     }
 
@@ -53,7 +55,7 @@ public class ResourceController {
     public ResponseEntity<?> getResources(@RequestHeader("Authorization") String authHeader){
         try {
             String jwt = authHeader.replace("Bearer ", "");
-            Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
             return ResponseEntity.ok(resourceManager.getAllResources());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

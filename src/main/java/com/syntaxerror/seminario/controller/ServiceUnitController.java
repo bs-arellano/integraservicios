@@ -15,8 +15,10 @@ import java.util.Map;
 @RestController
 public class ServiceUnitController {
     private final ServiceUnitManager serviceUnitManager;
-    public ServiceUnitController(ServiceUnitManager serviceUnitManager) {
+    private final JwtUtil jwtUtil;
+    public ServiceUnitController(ServiceUnitManager serviceUnitManager, JwtUtil jwtUtil) {
         this.serviceUnitManager = serviceUnitManager;
+        this.jwtUtil = jwtUtil;
     }
 
     // Create service unit endpoint
@@ -24,7 +26,7 @@ public class ServiceUnitController {
     public ResponseEntity<String> createServiceUnit(@RequestBody ServiceUnitCreationRequest request, @RequestHeader("Authorization") String jwt){
         try {
             //Decodes jwt
-            Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
             //Checks if the user is an admin
             if (!decodedToken.get("rol").equals("admin")) {
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
@@ -41,7 +43,7 @@ public class ServiceUnitController {
         try {
             //Decodes jwt
             String jwt = authHeader.replace("Bearer ", "");
-            Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
             //Checks if the user is an admin or an employee
             if (!decodedToken.get("rol").equals("admin")) {
                 Empleado empleado = serviceUnitManager.checkActiveEmployee(Long.parseLong(decodedToken.get("id")),serviceUnitID).orElseThrow(() -> new RuntimeException("Usuario no autorizado para realizar esta acción"));
@@ -61,7 +63,7 @@ public class ServiceUnitController {
         try {
             //Decodes jwt
             String jwt = authHeader.replace("Bearer ", "");
-            Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
             //Checks if the user is an admin or an employee
             if (!decodedToken.get("rol").equals("admin")) {
                 Empleado empleado = serviceUnitManager.checkActiveEmployee(Long.parseLong(decodedToken.get("id")),serviceUnitID).orElseThrow(() -> new RuntimeException("Usuario no autorizado para realizar esta acción"));
@@ -79,7 +81,7 @@ public class ServiceUnitController {
     public ResponseEntity<?> getEmployee(@RequestHeader("Authorization") String jwt, @PathVariable Long serviceUnitID, @PathVariable Long employeeID) {
         try {
             //Decodes jwt
-            Map<String, String> decodedToken = JwtUtil.decodeToken(jwt);
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
             //Get the employee
             Empleado empleado = serviceUnitManager.getEmployeeById(employeeID);
             //Checks if the user is an admin or manager at the service unit
