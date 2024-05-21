@@ -77,4 +77,10 @@ public class BookingManager {
         booking.setHoraFinReserva(end);
         return reservaRepository.save(booking);
     }
+    public List<Reserva> getBookingsByResource(Long resourceId) {
+        return reservaRepository.findByRecursoId(resourceId);
+    }
+    public List<Reserva> getBookingsByUser(Long userId) {
+        return reservaRepository.findByUsuarioId(userId);
+    }
 }

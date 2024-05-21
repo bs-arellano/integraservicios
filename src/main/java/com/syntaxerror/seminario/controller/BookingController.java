@@ -10,6 +10,7 @@ import com.syntaxerror.seminario.service.ServiceUnitManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,6 +45,22 @@ public class BookingController {
             return ResponseEntity.ok().body("Reserva creada con éxito. ID: " + reserva.getReservaId());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/resource/{id}/bookings")
+    public ResponseEntity<List<Reserva>> getBookings(@PathVariable("id") Long resourceId, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            //Validates request
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
+            Recurso resource = resourceManager.getResource(resourceId);
+            if (serviceUnitManager.checkActiveEmployee(Long.parseLong(decodedToken.get("id")), resource.getUnidadId()).isEmpty()){
+                return ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.ok().body(bookingManager.getBookingsByResource(resourceId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
