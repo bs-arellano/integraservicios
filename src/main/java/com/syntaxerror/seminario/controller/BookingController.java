@@ -63,4 +63,19 @@ public class BookingController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/user/{id}/bookings")
+    public ResponseEntity<List<Reserva>> getBookingsByUser(@PathVariable("id") Long userId, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            //Validates request
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
+            if (!decodedToken.get("id").equals(userId.toString())) {
+                return ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.ok().body(bookingManager.getBookingsByUser(userId));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
