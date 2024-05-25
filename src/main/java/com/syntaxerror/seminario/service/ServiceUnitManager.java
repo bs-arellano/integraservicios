@@ -101,4 +101,15 @@ public class ServiceUnitManager {
         }
         return true;
     }
+
+    //Get current employer
+    public Empleado getCurrentEmployer(Long userId) {
+        List<Empleado> employees = empleadoRepository.findByUsuarioId(userId);
+        //Filter the active ones
+        employees.removeIf(e -> !e.getStatus());
+        if (employees.isEmpty()){
+            return null;
+        }
+        return employees.get(0);
+    }
 }

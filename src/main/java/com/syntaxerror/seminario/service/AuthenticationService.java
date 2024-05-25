@@ -24,7 +24,7 @@ public class AuthenticationService {
     }
 
     //User login
-    public String signIn(String email, String password) {
+    public Usuario signIn(String email, String password) {
         //Checks if the email is valid
         validationService.validateEmail(email);
 
@@ -36,10 +36,10 @@ public class AuthenticationService {
             throw new RuntimeException("La contraseña es incorrecta");
         }
         Long userId = usuarioMongo.getUsuarioId();
-        Usuario user = userService.findUserById(userId);
+        return userService.findUserById(userId);
 
         //Returns a JWT with the user id and role
-        return jwtUtil.generateToken(user.getUsuarioId().toString(), user.getRol());
+        //return jwtUtil.generateToken(user.getUsuarioId().toString(), user.getRol());
     }
 
     public boolean validateRequest(String jwt, Long id) {

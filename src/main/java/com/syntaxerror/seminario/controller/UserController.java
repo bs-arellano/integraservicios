@@ -1,9 +1,14 @@
 package com.syntaxerror.seminario.controller;
 
 import com.syntaxerror.seminario.dto.UserLoginRequest;
+import com.syntaxerror.seminario.dto.UserLoginResponse;
 import com.syntaxerror.seminario.dto.UserUpdateRequest;
+import com.syntaxerror.seminario.model.Empleado;
+import com.syntaxerror.seminario.model.Usuario;
 import com.syntaxerror.seminario.service.AuthenticationService;
 import com.syntaxerror.seminario.dto.UserRegistrationRequest;
+import com.syntaxerror.seminario.service.JwtUtil;
+import com.syntaxerror.seminario.service.ServiceUnitManager;
 import com.syntaxerror.seminario.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +17,14 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final AuthenticationService authenticationService;
     private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final ServiceUnitManager serviceUnitManager;
 
-    public UserController(AuthenticationService authenticationService, UserService userService) {
+    public UserController(AuthenticationService authenticationService, UserService userService, JwtUtil jwtUtil, ServiceUnitManager serviceUnitManager) {
         this.authenticationService = authenticationService;
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
+        this.serviceUnitManager = serviceUnitManager;
     }
 
     // Singup endpoint
@@ -31,12 +40,20 @@ public class UserController {
 
     // Login endpoint
     @PostMapping("/signin")
-    public ResponseEntity<String> SignIn(@RequestBody UserLoginRequest request){
+    public ResponseEntity<UserLoginResponse> SignIn(@RequestBody UserLoginRequest request){
         try {
-            String token = authenticationService.signIn(request.getUsername(), request.getPassword());
-            return ResponseEntity.ok(token);
+            Usuario user = authenticationService.signIn(request.getUsername(), request.getPassword());
+            Empleado employee = serviceUnitManager.getCurrentEmployer(user.getUsuarioId());
+            String token = jwtUtil.generateToken(user.getUsuarioId().toString(), user.getRol());
+            return ResponseEntity.ok(UserLoginResponse.builder()
+                    .token(token)
+                    .rol(user.getRol())
+                    .username(user.getNombre())
+                    .serviceUnitId(employee.getUnidadId())
+                    .build());
+            //rol {user-admin}, username, service unit: id
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
