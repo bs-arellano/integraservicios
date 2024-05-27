@@ -78,6 +78,10 @@ public class BookingManager {
         booking.setEstado(EstadoTransaccion.ACTIVA);
         return reservaRepository.save(booking);
     }
+
+    public Reserva getBooking(Long bookingId) {
+        return reservaRepository.findById(bookingId).orElseThrow(()-> new RuntimeException("Reserva no encontrada"));
+    }
     public List<Reserva> getBookingsByResource(Long resourceId) {
         return reservaRepository.findByRecursoId(resourceId);
     }

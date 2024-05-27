@@ -78,4 +78,23 @@ public class BookingController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/booking/{id}")
+    public ResponseEntity<Reserva> getBooking(@PathVariable("id") Long bookingId, @RequestHeader("Authorization") String authHeader){
+        try {
+            String jwt = authHeader.replace("Bearer ", "");
+            //Validates request
+            Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
+            Reserva reserva = bookingManager.getBooking(bookingId);
+            if (!decodedToken.get("id").equals(reserva.getUsuarioId().toString())) {
+                Recurso resource = resourceManager.getResource(reserva.getRecursoId());
+                if (serviceUnitManager.checkActiveEmployee(Long.parseLong(decodedToken.get("id")), resource.getUnidadId()).isEmpty()){
+                    return ResponseEntity.badRequest().build();
+                }
+            }
+            return ResponseEntity.ok().body(reserva);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }
