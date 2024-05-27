@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -98,6 +99,24 @@ public class ServiceUnitController {
             return ResponseEntity.ok(empleado);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    //Get all service units
+    @GetMapping("/serviceunit")
+    public ResponseEntity<List<UnidadServicio>> getServiceUnits(){
+        try {
+            return ResponseEntity.ok(serviceUnitManager.getAllServiceUnits());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    // Get service unit by id
+    @GetMapping("/serviceunit/{id}")
+    public ResponseEntity<UnidadServicio> getServiceUnit(@PathVariable("id") Long id){
+        try {
+            return ResponseEntity.ok(serviceUnitManager.getServiceUnit(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

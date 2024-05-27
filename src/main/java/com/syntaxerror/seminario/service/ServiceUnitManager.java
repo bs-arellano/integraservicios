@@ -112,4 +112,12 @@ public class ServiceUnitManager {
         }
         return employees.get(0);
     }
+
+    public List<UnidadServicio> getAllServiceUnits() {
+        return unidadServicioRepository.findAll();
+    }
+
+    public UnidadServicio getServiceUnit(Long id) {
+        return unidadServicioRepository.findById(id).orElseThrow(() -> new RuntimeException("Unidad de servicio no encontrada"));
+    }
 }
