@@ -4,6 +4,8 @@ import com.syntaxerror.seminario.model.Usuario;
 import com.syntaxerror.seminario.model.UsuarioMongo;
 import com.syntaxerror.seminario.repository.UsuarioMongoRepository;
 import com.syntaxerror.seminario.repository.UsuarioRepository;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -76,5 +78,9 @@ public class UserService {
             throw new RuntimeException("El correo no esta registrado");
         }
         return usuarioMongo;
+    }
+
+    public List<Usuario> getAllUsers() {
+        return usuarioRepository.findAll();
     }
 }

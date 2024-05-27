@@ -13,6 +13,8 @@ import com.syntaxerror.seminario.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class UserController {
     private final AuthenticationService authenticationService;
@@ -70,6 +72,26 @@ public class UserController {
             return ResponseEntity.ok("User updated successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    //Get all users
+    @GetMapping("/users")
+    public ResponseEntity<List<Usuario>> getAllUsers(){
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    //Get user by id
+    @GetMapping("/users/{id}")
+    public ResponseEntity<Usuario> getUserById(@PathVariable("id") Long id){
+        try {
+            return ResponseEntity.ok(userService.findUserById(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
