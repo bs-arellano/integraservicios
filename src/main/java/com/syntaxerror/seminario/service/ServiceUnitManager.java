@@ -86,6 +86,17 @@ public class ServiceUnitManager {
         return serviceUnitEmployees;
     }
 
+    //Gets the active employment of a user
+    public Empleado getActiveEmployment(Long userId) {
+        List<Empleado> employees = empleadoRepository.findByUsuarioId(userId);
+        //Filter the active ones
+        employees.removeIf(e -> !e.getStatus());
+        if (employees.isEmpty()){
+            return null;
+        }
+        return employees.get(0);
+    }
+
     //Get employee by id
     public Empleado getEmployeeById(Long employeeId) {
         return empleadoRepository.findById(employeeId).orElseThrow(()-> new RuntimeException("Empleado no encontrado"));

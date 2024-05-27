@@ -36,7 +36,9 @@ public class LoanService {
         Empleado empleado = empleadoRepository.findById(empleadoId)
                 .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
 
-        serviceUnitManager.checkActiveEmployee(empleado.getEmpleadoId(), empleado.getUnidadId());
+        if (serviceUnitManager.checkActiveEmployee(empleado.getEmpleadoId(), empleado.getUnidadId()).isEmpty()) {
+            throw new RuntimeException("Empleado no activo");
+        }
 
         // Set booking as completed
         reserva.setEstado(EstadoTransaccion.COMPLETADA);
@@ -52,11 +54,18 @@ public class LoanService {
         return prestamoRepository.save(prestamo);
     }
 
-    public Prestamo checkOut(Long prestamoId, Timestamp horaDevolucion) {
+    public Prestamo checkOut(Long prestamoId, Long empleadoId, Timestamp horaDevolucion) {
         // Retrieve the Prestamo from the repository
         Prestamo prestamo = prestamoRepository.findById(prestamoId)
                 .orElseThrow(() -> new RuntimeException("Prestamo no encontrado"));
 
+        // Retrieve the Empleado from the repository
+        Empleado empleado = empleadoRepository.findById(empleadoId)
+                .orElseThrow(() -> new RuntimeException("Empleado no encontrado"));
+
+        if (serviceUnitManager.checkActiveEmployee(empleado.getEmpleadoId(), empleado.getUnidadId()).isEmpty()) {
+            throw new RuntimeException("Empleado no activo");
+        }
         // Update the Prestamo
         prestamo.setHoraDevolucion(horaDevolucion);
         prestamo.setEstado(EstadoTransaccion.COMPLETADA);
