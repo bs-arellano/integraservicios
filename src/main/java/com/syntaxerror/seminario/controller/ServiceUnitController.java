@@ -52,7 +52,7 @@ public class ServiceUnitController {
                     return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
                 }
             }
-            Empleado nuevoEmpleado = serviceUnitManager.hireEmployee(request.getEmployeeID(), serviceUnitID, "Recepcionista");
+            Empleado nuevoEmpleado = serviceUnitManager.hireEmployee(request.getEmployeeID(), serviceUnitID, request.getPosition());
             return ResponseEntity.created(new URI("/serviceunit/" + serviceUnitID + "/employee/" + nuevoEmpleado.getEmpleadoId())).body("Empleado contratado exitosamente!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
