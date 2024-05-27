@@ -13,10 +13,10 @@ public class Prestamo {
     private Long prestamoId;
 
     @Column(name = "reserva_id", nullable = false, unique = true)
-    private Integer reservaId;
+    private Long reservaId;
 
     @Column(name = "empleado_id", nullable = false)
-    private Integer empleadoId;
+    private Long empleadoId;
 
     @Column(name = "hora_entrega", nullable = false)
     private Timestamp horaEntrega;
@@ -36,19 +36,19 @@ public class Prestamo {
         this.prestamoId = prestamoId;
     }
 
-    public Integer getReservaId() {
+    public Long getReservaId() {
         return reservaId;
     }
 
-    public void setReservaId(Integer reservaId) {
+    public void setReservaId(Long reservaId) {
         this.reservaId = reservaId;
     }
 
-    public Integer getEmpleadoId() {
+    public Long getEmpleadoId() {
         return empleadoId;
     }
 
-    public void setEmpleadoId(Integer empleadoId) {
+    public void setEmpleadoId(Long empleadoId) {
         this.empleadoId = empleadoId;
     }
 
