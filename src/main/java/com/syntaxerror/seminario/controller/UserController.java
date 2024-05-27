@@ -68,7 +68,7 @@ public class UserController {
             if(!authenticationService.validateRequest(jwt, id)){
                 return ResponseEntity.badRequest().body("Usuario no autorizado para realizar esta acción");
             }
-            userService.updateUser(id, request.getUsername(), request.getEmail(), request.getPassword());
+            userService.updateUser(id, request.getUsername(), request.getEmail(), request.getPassword(), request.getRol());
             return ResponseEntity.ok("User updated successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

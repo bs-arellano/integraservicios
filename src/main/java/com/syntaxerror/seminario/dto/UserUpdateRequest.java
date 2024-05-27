@@ -10,4 +10,5 @@ public class UserUpdateRequest {
     private Optional<String> username;
     private Optional<String> password;
     private Optional<String> email;
+    private Optional<String> rol;
 }

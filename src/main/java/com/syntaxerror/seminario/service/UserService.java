@@ -50,7 +50,7 @@ public class UserService {
         usuarioMongoRepository.save(usuarioMongo);
     }
 
-    public void updateUser(Long userID, Optional<String> username, Optional<String> email, Optional<String> password) {
+    public void updateUser(Long userID, Optional<String> username, Optional<String> email, Optional<String> password, Optional<String> rol) {
         // Retrieve the user
         Usuario usuario = usuarioRepository.findById(userID)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -65,6 +65,20 @@ public class UserService {
             usuarioMongo.setEmail(e);
             usuarioMongoRepository.save(usuarioMongo);
         });
+        // Update password if present and valid
+        password.ifPresent(p -> {
+            validationService.validatePassword(p);
+            UsuarioMongo usuarioMongo = usuarioMongoRepository.findById(userID.toString())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            String hashedPassword = passwordEncoder.encode(p);
+            usuarioMongo.setPassword(hashedPassword);
+            usuarioMongoRepository.save(usuarioMongo);
+        });
+        // Update rol if present
+        rol.ifPresent(usuario::setRol);
+
+        // Save the updated user
+        usuarioRepository.save(usuario);
     }
 
     public Usuario findUserById(Long id) {
