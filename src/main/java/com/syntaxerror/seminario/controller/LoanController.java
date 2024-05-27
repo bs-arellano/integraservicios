@@ -6,12 +6,7 @@ import com.syntaxerror.seminario.service.JwtUtil;
 import com.syntaxerror.seminario.service.LoanService;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.sql.Time;
+import org.springframework.web.bind.annotation.*;
 import java.sql.Timestamp;
 import java.util.Map;
 
@@ -45,7 +40,7 @@ public class LoanController {
         }
     }
     // Check out a book
-    @PostMapping("/booking/{id}/checkout")
+    @PutMapping("/loan/{id}/checkout")
     public ResponseEntity<Prestamo> checkOutBook(@PathVariable("id") Long bookingId, @RequestHeader("Authorization") String authHeader){
         try{
             String jwt = authHeader.replace("Bearer ", "");
@@ -56,6 +51,16 @@ public class LoanController {
                 return ResponseEntity.badRequest().build();
             }
             Prestamo prestamo = loanService.checkOut(bookingId, empleado.getEmpleadoId(), new Timestamp(System.currentTimeMillis()));
+            return ResponseEntity.ok(prestamo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    // Get loan by id
+    @GetMapping("/loan/{id}")
+    public ResponseEntity<Prestamo> getLoanById(@PathVariable("id") Long bookingId){
+        try{
+            Prestamo prestamo = loanService.getLoanById(bookingId);
             return ResponseEntity.ok(prestamo);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

@@ -73,4 +73,9 @@ public class LoanService {
         // Save the updated Prestamo to the repository
         return prestamoRepository.save(prestamo);
     }
+
+    public Prestamo getLoanById(Long bookingId) {
+        return prestamoRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Prestamo no encontrado"));
+    }
 }
