@@ -66,7 +66,7 @@ public class UserServiceTest {
         when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(new Usuario()));
         when(usuarioMongoRepository.findById(anyString())).thenReturn(Optional.of(new UsuarioMongo()));
 
-        userService.updateUser(1L, Optional.of("username"), Optional.of("email"), Optional.of("password"));
+        userService.updateUser(1L, Optional.of("username"), Optional.of("email"), Optional.of("password"), Optional.of("rol"));
 
         verify(validationService, times(1)).validateEmail(anyString());
     }
@@ -75,7 +75,7 @@ public class UserServiceTest {
     public void updateUserWithNonExistingUser() {
         when(usuarioRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> userService.updateUser(1L, Optional.of("username"), Optional.of("email"), Optional.of("password")));
+        assertThrows(RuntimeException.class, () -> userService.updateUser(1L, Optional.of("username"), Optional.of("email"), Optional.of("password"), Optional.of("rol")));
     }
 
     @Test

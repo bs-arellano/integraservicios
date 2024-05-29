@@ -1,0 +1,99 @@
+package com.syntaxerror.seminario.services;
+
+import com.syntaxerror.seminario.model.Prestamo;
+import com.syntaxerror.seminario.repository.PrestamoRepository;
+import com.syntaxerror.seminario.repository.ReservaRepository;
+import com.syntaxerror.seminario.repository.EmpleadoRepository;
+import com.syntaxerror.seminario.service.ServiceUnitManager;
+import com.syntaxerror.seminario.model.Reserva;
+import com.syntaxerror.seminario.model.Empleado;
+import com.syntaxerror.seminario.service.LoanService;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+
+import java.sql.Timestamp;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+class LoanServiceTest {
+
+    @Mock
+    PrestamoRepository prestamoRepository;
+
+    @Mock
+    ReservaRepository reservaRepository;
+
+    @Mock
+    ServiceUnitManager serviceUnitManager;
+
+    @Mock
+    EmpleadoRepository empleadoRepository;
+
+    @InjectMocks
+    LoanService loanService;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    void checkInSuccessfully() {
+        when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(new Reserva()));
+        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(new Empleado()));
+        when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.empty());
+
+        Prestamo result = loanService.checkIn(1L, 1L, new Timestamp(System.currentTimeMillis()));
+
+        assertNotNull(result);
+        verify(prestamoRepository, times(1)).save(any(Prestamo.class));
+    }
+
+    @Test
+    void checkInFailsWhenReservaNotFound() {
+        when(reservaRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> loanService.checkIn(1L, 1L, new Timestamp(System.currentTimeMillis())));
+    }
+
+    @Test
+    void checkInFailsWhenEmpleadoNotFound() {
+        when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(new Reserva()));
+        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> loanService.checkIn(1L, 1L, new Timestamp(System.currentTimeMillis())));
+    }
+
+    @Test
+    void checkOutSuccessfully() {
+        when(prestamoRepository.findById(anyLong())).thenReturn(Optional.of(new Prestamo()));
+        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(new Empleado()));
+        when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.empty());
+
+        Prestamo result = loanService.checkOut(1L, 1L, new Timestamp(System.currentTimeMillis()));
+
+        assertNotNull(result);
+        verify(prestamoRepository, times(1)).save(any(Prestamo.class));
+    }
+
+    @Test
+    void checkOutFailsWhenPrestamoNotFound() {
+        when(prestamoRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> loanService.checkOut(1L, 1L, new Timestamp(System.currentTimeMillis())));
+    }
+
+    @Test
+    void checkOutFailsWhenEmpleadoNotFound() {
+        when(prestamoRepository.findById(anyLong())).thenReturn(Optional.of(new Prestamo()));
+        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> loanService.checkOut(1L, 1L, new Timestamp(System.currentTimeMillis())));
+    }
+}

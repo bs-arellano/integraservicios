@@ -1,4 +1,4 @@
-package com.syntaxerror.seminario;
+package com.syntaxerror.seminario.services;
 
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.repository.TipoRecursoRepository;

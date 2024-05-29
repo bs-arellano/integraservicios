@@ -1,8 +1,10 @@
 package com.syntaxerror.seminario.controller;
 
 import com.syntaxerror.seminario.dto.UserLoginRequest;
+import com.syntaxerror.seminario.dto.UserLoginResponse;
 import com.syntaxerror.seminario.dto.UserRegistrationRequest;
 import com.syntaxerror.seminario.dto.UserUpdateRequest;
+import com.syntaxerror.seminario.model.Usuario;
 import com.syntaxerror.seminario.service.AuthenticationService;
 import com.syntaxerror.seminario.service.UserService;
 import java.util.Optional;
@@ -65,9 +67,9 @@ public class UserControllerTest {
             .username("username")
             .password("password")
             .build();
-        when(authenticationService.signIn(anyString(), anyString())).thenReturn("Token");
+        when(authenticationService.signIn(anyString(), anyString())).thenReturn(new Usuario());
 
-        ResponseEntity<String> response = userController.SignIn(request);
+        ResponseEntity<UserLoginResponse> response = userController.SignIn(request);
 
         assertEquals(200, response.getStatusCodeValue());
         assertEquals("Token", response.getBody());
@@ -81,10 +83,10 @@ public class UserControllerTest {
             .build();
         when(authenticationService.signIn(anyString(), anyString())).thenThrow(new RuntimeException("Error"));
 
-        ResponseEntity<String> response = userController.SignIn(request);
+        ResponseEntity<UserLoginResponse> response = userController.SignIn(request);
 
         assertEquals(400, response.getStatusCode().value());
-        assertEquals("Error", response.getBody());
+        assertEquals("null", response.getBody());
     }
 
     @Test
@@ -95,7 +97,7 @@ public class UserControllerTest {
             .password(Optional.of("password"))
             .build();
         when(authenticationService.validateRequest(anyString(), anyLong())).thenReturn(true);
-        doNothing().when(userService).updateUser(any(Long.class), any(Optional.class), any(Optional.class), any(Optional.class));
+        doNothing().when(userService).updateUser(any(Long.class), any(Optional.class), any(Optional.class), any(Optional.class), any(Optional.class));
 
         ResponseEntity<String> response = userController.updateUser(request, 1L, "Bearer Token");
 
@@ -126,7 +128,7 @@ public class UserControllerTest {
                 .password(Optional.of("password"))
                 .build();
         when(authenticationService.validateRequest(anyString(), anyLong())).thenReturn(true);
-        doThrow(new RuntimeException("Error")).when(userService).updateUser(any(Long.class), any(Optional.class), any(Optional.class), any(Optional.class));
+        doThrow(new RuntimeException("Error")).when(userService).updateUser(any(Long.class), any(Optional.class), any(Optional.class), any(Optional.class),  any(Optional.class));
 
         ResponseEntity<String> response = userController.updateUser(request, 1L, "Bearer Token");
 

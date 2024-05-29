@@ -54,7 +54,7 @@ public class AuthenticationServiceTest {
         when(jwtUtil.generateToken(anyString(), anyString())).thenReturn("mockToken");
 
         // Call the method and assert the result
-        String result = authenticationService.signIn("ud@gmail.com", "password");
+        Usuario result = authenticationService.signIn("ud@gmail.com", "password");
         assertEquals("mockToken", result);
     }
 
