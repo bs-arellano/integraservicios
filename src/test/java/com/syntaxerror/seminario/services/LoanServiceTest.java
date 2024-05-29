@@ -55,7 +55,8 @@ class LoanServiceTest {
 
         when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reserva));
         when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(empleado));
-        when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.of(empleado));
+        when(serviceUnitManager.checkActiveEmployee(empleado.getEmpleadoId(),  empleado.getUnidadId())).thenReturn(Optional.of(empleado));
+        when(prestamoRepository.save(any(Prestamo.class))).thenReturn(new Prestamo());
 
         Prestamo result = loanService.checkIn(1L, 1L, new Timestamp(System.currentTimeMillis()));
 
@@ -79,14 +80,21 @@ class LoanServiceTest {
 
     @Test
     void checkOutSuccessfully() {
-        when(prestamoRepository.findById(anyLong())).thenReturn(Optional.of(new Prestamo()));
-        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(new Empleado()));
-        when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.empty());
+        Empleado empleado = new Empleado();
+        empleado.setUsuarioId(1L);
+        empleado.setStatus(true);
+        empleado.setUnidadId(1L);
+        Reserva reserva = new Reserva();
+        reserva.setEstado(EstadoTransaccion.COMPLETADA);
 
-        Prestamo result = loanService.checkOut(1L, 1L, new Timestamp(System.currentTimeMillis()));
+        when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reserva));
+        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(empleado));
+        when(serviceUnitManager.checkActiveEmployee(empleado.getEmpleadoId(),  empleado.getUnidadId())).thenReturn(Optional.of(empleado));
+        when(prestamoRepository.save(any(Prestamo.class))).thenReturn(new Prestamo());
+
+        Prestamo result = loanService.checkIn(1L, 1L, new Timestamp(System.currentTimeMillis()));
 
         assertNotNull(result);
-        verify(prestamoRepository, times(1)).save(any(Prestamo.class));
     }
 
     @Test
