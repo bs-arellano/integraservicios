@@ -1,7 +1,9 @@
 package com.syntaxerror.seminario.dto;
 
 import java.sql.Time;
+import lombok.Setter;
 
+@Setter
 public class ResourceTypeCreationRequest {
     private Long serviceUnitID;
     private String name;

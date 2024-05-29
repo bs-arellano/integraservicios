@@ -1,7 +1,9 @@
 package com.syntaxerror.seminario.dto;
 
 import java.sql.Time;
+import lombok.Setter;
 
+@Setter
 public class ServiceUnitCreationRequest {
     private String name;
     private Time startWorkingHours;

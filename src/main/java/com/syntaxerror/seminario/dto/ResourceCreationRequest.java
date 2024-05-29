@@ -1,5 +1,8 @@
 package com.syntaxerror.seminario.dto;
 
+import lombok.Setter;
+
+@Setter
 public class ResourceCreationRequest {
     private Long serviceUnitID;
     private Long resourceTypeID;
