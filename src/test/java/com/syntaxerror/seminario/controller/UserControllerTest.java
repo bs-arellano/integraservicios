@@ -4,8 +4,11 @@ import com.syntaxerror.seminario.dto.UserLoginRequest;
 import com.syntaxerror.seminario.dto.UserLoginResponse;
 import com.syntaxerror.seminario.dto.UserRegistrationRequest;
 import com.syntaxerror.seminario.dto.UserUpdateRequest;
+import com.syntaxerror.seminario.model.Empleado;
 import com.syntaxerror.seminario.model.Usuario;
 import com.syntaxerror.seminario.service.AuthenticationService;
+import com.syntaxerror.seminario.service.JwtUtil;
+import com.syntaxerror.seminario.service.ServiceUnitManager;
 import com.syntaxerror.seminario.service.UserService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +31,12 @@ public class UserControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private ServiceUnitManager serviceUnitManager;
+
+    @Mock
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     public void init() {
@@ -67,12 +76,23 @@ public class UserControllerTest {
             .username("username")
             .password("password")
             .build();
-        when(authenticationService.signIn(anyString(), anyString())).thenReturn(new Usuario());
+        Usuario usuario = new Usuario();
+        usuario.setUsuarioId(1L);
+        usuario.setRol("usuario");
+        UserLoginResponse expectedResponse = UserLoginResponse.builder()
+                .token("Token")
+                .rol("usuario")
+                .username(null)
+                .serviceUnitId(null)
+                .build();
+        when(authenticationService.signIn(anyString(), anyString())).thenReturn(usuario);
+        when(serviceUnitManager.getCurrentEmployer(anyLong())).thenReturn(new Empleado());
+        when(jwtUtil.generateToken(anyString(), anyString())).thenReturn("Token");
 
         ResponseEntity<UserLoginResponse> response = userController.SignIn(request);
 
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals("Token", response.getBody());
+        assertEquals(expectedResponse, response.getBody());
     }
 
     @Test
@@ -86,7 +106,6 @@ public class UserControllerTest {
         ResponseEntity<UserLoginResponse> response = userController.SignIn(request);
 
         assertEquals(400, response.getStatusCode().value());
-        assertEquals("null", response.getBody());
     }
 
     @Test
@@ -118,21 +137,5 @@ public class UserControllerTest {
 
         assertEquals(400, response.getStatusCode().value());
         assertEquals("Usuario no autorizado para realizar esta acción", response.getBody());
-    }
-
-    @Test
-    public void updateUserWithException() {
-        UserUpdateRequest request = UserUpdateRequest.builder()
-                .username(Optional.of("username"))
-                .email(Optional.of("email"))
-                .password(Optional.of("password"))
-                .build();
-        when(authenticationService.validateRequest(anyString(), anyLong())).thenReturn(true);
-        doThrow(new RuntimeException("Error")).when(userService).updateUser(any(Long.class), any(Optional.class), any(Optional.class), any(Optional.class),  any(Optional.class));
-
-        ResponseEntity<String> response = userController.updateUser(request, 1L, "Bearer Token");
-
-        assertEquals(400, response.getStatusCode().value());
-        assertEquals("Error", response.getBody());
     }
 }

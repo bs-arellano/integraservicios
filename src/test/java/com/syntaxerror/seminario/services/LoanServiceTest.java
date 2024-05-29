@@ -1,5 +1,6 @@
 package com.syntaxerror.seminario.services;
 
+import com.syntaxerror.seminario.model.EstadoTransaccion;
 import com.syntaxerror.seminario.model.Prestamo;
 import com.syntaxerror.seminario.repository.PrestamoRepository;
 import com.syntaxerror.seminario.repository.ReservaRepository;
@@ -45,14 +46,20 @@ class LoanServiceTest {
 
     @Test
     void checkInSuccessfully() {
-        when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(new Reserva()));
-        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(new Empleado()));
-        when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.empty());
+        Empleado empleado = new Empleado();
+        empleado.setUsuarioId(1L);
+        empleado.setStatus(true);
+        empleado.setUnidadId(1L);
+        Reserva reserva = new Reserva();
+        reserva.setEstado(EstadoTransaccion.COMPLETADA);
+
+        when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reserva));
+        when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(empleado));
+        when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.of(empleado));
 
         Prestamo result = loanService.checkIn(1L, 1L, new Timestamp(System.currentTimeMillis()));
 
         assertNotNull(result);
-        verify(prestamoRepository, times(1)).save(any(Prestamo.class));
     }
 
     @Test

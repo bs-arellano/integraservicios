@@ -6,6 +6,7 @@ import com.syntaxerror.seminario.model.Reserva;
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.repository.RecursoRepository;
 import com.syntaxerror.seminario.repository.ReservaRepository;
+
 import com.syntaxerror.seminario.service.BookingManager;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
 import com.syntaxerror.seminario.service.ResourceTypeManager;
@@ -51,11 +52,20 @@ class BookingManagerTest {
 
     @Test
     void bookResourceSuccessfully() {
-        when(recursoRepository.findById(anyLong())).thenReturn(Optional.of(new Recurso()));
+        TipoRecurso tipoRecurso = new TipoRecurso();
+        tipoRecurso.setTiempoMinimoPrestamo(Time.valueOf("00:30:00"));
+        Recurso recurso = new Recurso();
+        recurso.setTipoRecursoId(1L);
+        HorarioDisponibilidad horarioDisponibilidad = new HorarioDisponibilidad();
+        horarioDisponibilidad.setHoraInicio(Time.valueOf(LocalTime.of(8, 0)));
+        horarioDisponibilidad.setHoraFin(Time.valueOf(LocalTime.of(20, 0)));
+
+        when(recursoRepository.findById(anyLong())).thenReturn(Optional.of(recurso));
         when(reservaRepository.findByRecursoId(anyLong())).thenReturn(Collections.emptyList());
         when(serviceUnitManager.checkActiveEmployee(anyLong(), anyLong())).thenReturn(Optional.empty());
-        when(resourceTypeManager.getResourceType(1L)).thenReturn(new TipoRecurso()); // specify the argument
-        when(resourceTypeManager.getScheduleByDay(anyLong(), any())).thenReturn(new HorarioDisponibilidad());
+        when(resourceTypeManager.getResourceType(anyLong())).thenReturn(tipoRecurso);
+        when(resourceTypeManager.getScheduleByDay(anyLong(), any())).thenReturn(horarioDisponibilidad);
+        when(reservaRepository.save(any(Reserva.class))).thenReturn(new Reserva());
 
         Reserva result = bookingManager.bookResource(1L, 1L, Date.valueOf(LocalDate.now()), Time.valueOf(LocalTime.now()), Time.valueOf(LocalTime.now().plusHours(1)));
 

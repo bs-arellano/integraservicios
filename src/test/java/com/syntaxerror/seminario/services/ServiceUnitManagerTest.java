@@ -7,6 +7,7 @@ import com.syntaxerror.seminario.repository.EmpleadoRepository;
 import com.syntaxerror.seminario.repository.UnidadServicioRepository;
 import com.syntaxerror.seminario.repository.UsuarioRepository;
 import com.syntaxerror.seminario.service.ServiceUnitManager;
+import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -50,33 +51,43 @@ class ServiceUnitManagerTest {
     }
 
     @Test
-    void hireEmployeeSuccessfully() {
-        when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(new Usuario()));
-        when(unidadServicioRepository.findById(anyLong())).thenReturn(Optional.of(new UnidadServicio()));
-        when(empleadoRepository.findByUnidadId(anyLong())).thenReturn(Collections.emptyList());
-        when(empleadoRepository.save(any(Empleado.class))).thenReturn(new Empleado());
+void hireEmployeeSuccessfully() {
+    Usuario usuario = new Usuario();
+    usuario.setRol("employee");
 
-        Empleado result = serviceUnitManager.hireEmployee(1L, 1L, "cargo");
+    when(usuarioRepository.findById(anyLong())).thenReturn(Optional.of(usuario));
+    when(unidadServicioRepository.findById(anyLong())).thenReturn(Optional.of(new UnidadServicio()));
+    when(empleadoRepository.findByUnidadId(anyLong())).thenReturn(Collections.emptyList());
+    when(empleadoRepository.save(any(Empleado.class))).thenReturn(new Empleado());
 
-        assertNotNull(result);
-        verify(empleadoRepository, times(1)).save(any(Empleado.class));
-    }
+    Empleado result = serviceUnitManager.hireEmployee(1L, 1L, "cargo");
+
+    assertNotNull(result);
+    verify(empleadoRepository, times(1)).save(any(Empleado.class));
+}
 
     @Test
     void checkActiveEmployeeSuccessfully() {
-        when(empleadoRepository.findByUnidadId(anyLong())).thenReturn(Collections.singletonList(new Empleado()));
+        Empleado empleado = new Empleado();
+        empleado.setUsuarioId(1L);
+        empleado.setStatus(true);
+
+        when(empleadoRepository.findByUnidadId(anyLong())).thenReturn(new ArrayList<>(Collections.singletonList(empleado)));
 
         Optional<Empleado> result = serviceUnitManager.checkActiveEmployee(1L, 1L);
 
         assertTrue(result.isPresent());
     }
 
-    @Test
-    void getServiceUnitActiveEmployeesSuccessfully() {
-        when(empleadoRepository.findByUnidadId(anyLong())).thenReturn(Collections.singletonList(new Empleado()));
+      @Test
+      void getServiceUnitActiveEmployeesSuccessfully() {
+          Empleado empleado = new Empleado();
+          empleado.setUsuarioId(1L);
+          empleado.setStatus(true);
+            when(empleadoRepository.findByUnidadId(anyLong())).thenReturn(new ArrayList<>(Collections.singletonList(empleado)));
 
-        var result = serviceUnitManager.getServiceUnitActiveEmployees(1L);
+            var result = serviceUnitManager.getServiceUnitActiveEmployees(1L);
 
-        assertFalse(result.isEmpty());
-    }
+            assertFalse(result.isEmpty());
+        }
 }

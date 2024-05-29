@@ -41,6 +41,11 @@ public class Usuario {
         this.nombre = nombre;
     }
 
+    public void setUsuarioId(Long usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+
     public String getRol() {
         return rol;
     }

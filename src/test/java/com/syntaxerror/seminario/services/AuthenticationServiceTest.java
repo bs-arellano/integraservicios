@@ -55,7 +55,7 @@ public class AuthenticationServiceTest {
 
         // Call the method and assert the result
         Usuario result = authenticationService.signIn("ud@gmail.com", "password");
-        assertEquals("mockToken", result);
+        assertEquals(usuario.getUsuarioId(), result.getUsuarioId());
     }
 
     @Test
