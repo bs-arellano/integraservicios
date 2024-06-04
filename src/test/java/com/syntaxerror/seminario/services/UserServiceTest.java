@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Optional;
 
@@ -33,6 +35,9 @@ public class UserServiceTest {
     @Mock
     private ValidationService validationService;
 
+    @Mock
+    private TransactionTemplate transactionTemplate;
+
     @InjectMocks
     private UserService userService;
 
@@ -47,6 +52,10 @@ public class UserServiceTest {
         when(passwordEncoder.encode(anyString())).thenReturn("hashedPassword");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(new Usuario());
         when(usuarioMongoRepository.save(any(UsuarioMongo.class))).thenReturn(new UsuarioMongo());
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenAnswer(invocation -> {
+            TransactionCallback<?> callback = invocation.getArgument(0);
+            return callback.doInTransaction(null);
+        });
 
         userService.createUser("name", "email", "password", "rol");
 
@@ -57,7 +66,10 @@ public class UserServiceTest {
     @Test
     public void createUserWithExistingEmail() {
         when(usuarioMongoRepository.findByEmail(anyString())).thenReturn(new UsuarioMongo());
-
+        when(transactionTemplate.execute(any(TransactionCallback.class))).thenAnswer(invocation -> {
+            TransactionCallback<?> callback = invocation.getArgument(0);
+            return callback.doInTransaction(null);
+        });
         assertThrows(RuntimeException.class, () -> userService.createUser("name", "email", "password", "rol"));
     }
 
