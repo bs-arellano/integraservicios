@@ -23,7 +23,9 @@ CREATE TYPE "dia_semana" AS ENUM (
 	'sabado',
 	'domingo'
 );
+CREATE CAST (varchar AS public."dia_semana") WITH INOUT AS IMPLICIT;
 CREATE TYPE "estado_transaccion" AS ENUM ('activa', 'cancelada', 'completada');
+CREATE CAST (varchar AS public."estado_transaccion") WITH INOUT AS IMPLICIT;
 
 --CONVENIOS
 CREATE TABLE "Convenios" (
