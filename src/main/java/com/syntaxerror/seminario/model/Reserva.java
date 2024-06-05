@@ -28,6 +28,7 @@ public class Reserva {
     @Column(name = "hora_fin_reserva", nullable = false)
     private Time horaFinReserva;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
     private EstadoTransaccion estado;
 

@@ -1,9 +1,9 @@
 package com.syntaxerror.seminario.model;
 
 public enum EstadoTransaccion {
-    ACTIVA("activa"),
-    CANCELADA("cancelada"),
-    COMPLETADA("completada");
+    activa("activa"),
+    cancelada("cancelada"),
+    completada("completada");
     private String value;
 
     EstadoTransaccion(String value) {

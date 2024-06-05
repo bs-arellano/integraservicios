@@ -24,9 +24,10 @@ public class ServiceUnitController {
 
     // Create service unit endpoint
     @PostMapping("/serviceunit")
-    public ResponseEntity<String> createServiceUnit(@RequestBody ServiceUnitCreationRequest request, @RequestHeader("Authorization") String jwt){
+    public ResponseEntity<String> createServiceUnit(@RequestBody ServiceUnitCreationRequest request, @RequestHeader("Authorization") String authHeader){
         try {
             //Decodes jwt
+            String jwt = authHeader.replace("Bearer ", "");
             Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
             //Checks if the user is an admin
             if (!decodedToken.get("rol").equals("admin")) {

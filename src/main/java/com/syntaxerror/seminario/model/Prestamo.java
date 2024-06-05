@@ -24,6 +24,7 @@ public class Prestamo {
     @Column(name = "hora_devolucion")
     private Timestamp horaDevolucion;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
     private EstadoTransaccion estado;
 

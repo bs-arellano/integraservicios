@@ -36,6 +36,7 @@ public class UserController {
             userService.createUser(request.getUsername(), request.getEmail(), request.getPassword(), "usuario");
             return ResponseEntity.ok("User registered successfully!");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -47,14 +48,17 @@ public class UserController {
             Usuario user = authenticationService.signIn(request.getUsername(), request.getPassword());
             Empleado employee = serviceUnitManager.getCurrentEmployer(user.getUsuarioId());
             String token = jwtUtil.generateToken(user.getUsuarioId().toString(), user.getRol());
-            return ResponseEntity.ok(UserLoginResponse.builder()
+            UserLoginResponse.UserLoginResponseBuilder builder = UserLoginResponse.builder()
                     .token(token)
                     .rol(user.getRol())
-                    .username(user.getNombre())
-                    .serviceUnitId(employee.getUnidadId())
-                    .build());
+                    .username(user.getNombre());
+            if(employee != null) {
+                builder.serviceUnitId(employee.getUnidadId());
+            }
+            return ResponseEntity.ok(builder.build());
             //rol {user-admin}, username, service unit: id
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

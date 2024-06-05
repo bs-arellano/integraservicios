@@ -75,7 +75,7 @@ public class BookingManager {
         booking.setFechaReserva(date);
         booking.setHoraInicioReserva(start);
         booking.setHoraFinReserva(end);
-        booking.setEstado(EstadoTransaccion.ACTIVA);
+        booking.setEstado(EstadoTransaccion.activa);
         return reservaRepository.save(booking);
     }
 
@@ -91,10 +91,10 @@ public class BookingManager {
 
     public Reserva cancelBooking(Long bookingId) {
         Reserva booking = reservaRepository.findById(bookingId).orElseThrow(()->new RuntimeException("Reserva no encontrada"));
-        if (booking.getEstado().equals(EstadoTransaccion.CANCELADA)) {
+        if (booking.getEstado().equals(EstadoTransaccion.cancelada)) {
             throw new RuntimeException("Reserva ya cancelada");
         }
-        booking.setEstado(EstadoTransaccion.CANCELADA);
+        booking.setEstado(EstadoTransaccion.cancelada);
         return reservaRepository.save(booking);
     }
 }

@@ -31,6 +31,7 @@ public class BookingController {
     @PostMapping("/resource/{id}/book")
     public ResponseEntity<String> bookResource(@RequestBody BookResourceRequest request, @PathVariable("id") Long resourceId, @RequestHeader("Authorization") String authHeader){
         try {
+            System.out.println(request.getDate());
             String jwt = authHeader.replace("Bearer ", "");
             //Validates request
             Map<String, String> decodedToken = jwtUtil.decodeToken(jwt);
@@ -60,6 +61,7 @@ public class BookingController {
             }
             return ResponseEntity.ok().body(bookingManager.getBookingsByResource(resourceId));
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

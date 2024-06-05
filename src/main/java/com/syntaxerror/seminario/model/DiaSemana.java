@@ -1,11 +1,13 @@
 package com.syntaxerror.seminario.model;
 
 public enum DiaSemana {
-    LUNES("lunes"),
-    MARTES("martes"),
-    MIERCOLES("miercoles"),
-    JUEVES("jueves"),
-    VIERNES("viernes");
+    lunes("lunes"),
+    martes("martes"),
+    miercoles("miercoles"),
+    jueves("jueves"),
+    viernes("viernes"),
+    sabado("sabado"),
+    domingo("domingo");
 
     private String value;
 

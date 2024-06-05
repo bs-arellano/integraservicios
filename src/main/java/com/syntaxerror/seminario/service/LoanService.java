@@ -29,7 +29,7 @@ public class LoanService {
         // Retrieve the Reserva from the repository
         Reserva reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-        if (reserva.getEstado().equals(EstadoTransaccion.CANCELADA)) {
+        if (reserva.getEstado().equals(EstadoTransaccion.cancelada)) {
             throw new RuntimeException("Reserva cancelada");
         }
         // Retrieve the Empleado from the repository
@@ -41,14 +41,14 @@ public class LoanService {
         }
 
         // Set booking as completed
-        reserva.setEstado(EstadoTransaccion.COMPLETADA);
+        reserva.setEstado(EstadoTransaccion.completada);
 
         // Create a new Prestamo
         Prestamo prestamo = new Prestamo();
         prestamo.setReservaId(reserva.getReservaId());
         prestamo.setEmpleadoId(empleado.getEmpleadoId());
         prestamo.setHoraEntrega(horaEntrega);
-        prestamo.setEstado(EstadoTransaccion.ACTIVA);
+        prestamo.setEstado(EstadoTransaccion.activa);
 
         // Save the Prestamo to the repository
         return prestamoRepository.save(prestamo);
@@ -68,7 +68,7 @@ public class LoanService {
         }
         // Update the Prestamo
         prestamo.setHoraDevolucion(horaDevolucion);
-        prestamo.setEstado(EstadoTransaccion.COMPLETADA);
+        prestamo.setEstado(EstadoTransaccion.completada);
 
         // Save the updated Prestamo to the repository
         return prestamoRepository.save(prestamo);

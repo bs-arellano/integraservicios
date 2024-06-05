@@ -51,7 +51,7 @@ class LoanServiceTest {
         empleado.setStatus(true);
         empleado.setUnidadId(1L);
         Reserva reserva = new Reserva();
-        reserva.setEstado(EstadoTransaccion.COMPLETADA);
+        reserva.setEstado(EstadoTransaccion.completada);
 
         when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reserva));
         when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(empleado));
@@ -85,7 +85,7 @@ class LoanServiceTest {
         empleado.setStatus(true);
         empleado.setUnidadId(1L);
         Reserva reserva = new Reserva();
-        reserva.setEstado(EstadoTransaccion.COMPLETADA);
+        reserva.setEstado(EstadoTransaccion.completada);
 
         when(reservaRepository.findById(anyLong())).thenReturn(Optional.of(reserva));
         when(empleadoRepository.findById(anyLong())).thenReturn(Optional.of(empleado));
