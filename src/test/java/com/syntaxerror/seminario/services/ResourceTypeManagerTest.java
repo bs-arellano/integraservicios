@@ -1,5 +1,7 @@
 package com.syntaxerror.seminario.services;
 
+import com.syntaxerror.seminario.model.HorarioDisponibilidad;
+import com.syntaxerror.seminario.model.Reserva;
 import com.syntaxerror.seminario.model.TipoRecurso;
 import com.syntaxerror.seminario.model.UnidadServicio;
 import com.syntaxerror.seminario.repository.HorarioDisponibilidadRepository;
@@ -73,5 +75,28 @@ public class ResourceTypeManagerTest {
         TipoRecurso actual = resourceTypeManager.createResourceType(1L, "Proyector", "Proyector de alta definición", Time.valueOf("02:00:00"));
 
         assertEquals(tipoRecurso, actual);
+    }
+
+    @Test
+    public void testGetResourceTypeSchedules() {
+        Long resourceTypeID = 1L;
+
+        HorarioDisponibilidad horario1 = new HorarioDisponibilidad();
+        horario1.setTipoRecursoId(resourceTypeID);
+        horario1.setHoraInicio(Time.valueOf("08:00:00"));
+        horario1.setHoraFin(Time.valueOf("17:00:00"));
+
+        HorarioDisponibilidad horario2 = new HorarioDisponibilidad();
+        horario2.setTipoRecursoId(resourceTypeID);
+        horario2.setHoraInicio(Time.valueOf("09:00:00"));
+        horario2.setHoraFin(Time.valueOf("18:00:00"));
+
+        when(horarioDisponibilidadRepository.findByTipoRecursoId(resourceTypeID)).thenReturn(Arrays.asList(horario1, horario2));
+
+        List<HorarioDisponibilidad> result = resourceTypeManager.getResourceTypeSchedules(resourceTypeID);
+
+        assertEquals(2, result.size());
+        assertEquals(horario1, result.get(0));
+        assertEquals(horario2, result.get(1));
     }
 }

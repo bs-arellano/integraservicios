@@ -1,5 +1,6 @@
 package com.syntaxerror.seminario.services;
 
+import com.syntaxerror.seminario.model.EstadoTransaccion;
 import com.syntaxerror.seminario.model.HorarioDisponibilidad;
 import com.syntaxerror.seminario.model.Recurso;
 import com.syntaxerror.seminario.model.Reserva;
@@ -12,7 +13,9 @@ import com.syntaxerror.seminario.service.ServiceUnitManager;
 import com.syntaxerror.seminario.service.ResourceTypeManager;
 
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,5 +91,32 @@ class BookingManagerTest {
         when(recursoRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> bookingManager.bookResource(1L, 1L, Date.valueOf(LocalDate.now()), Time.valueOf(LocalTime.now()), Time.valueOf(LocalTime.now().plusHours(1))));
+    }
+
+    @Test
+    public void testGetBookingsByResource() {
+        Long resourceId = 1L;
+
+        Reserva reserva1 = new Reserva();
+        reserva1.setRecursoId(resourceId);
+        reserva1.setEstado(EstadoTransaccion.activa);
+        reserva1.setFechaReserva(Date.valueOf(LocalDate.now()));
+        reserva1.setHoraInicioReserva(Time.valueOf(LocalTime.now()));
+        reserva1.setHoraFinReserva(Time.valueOf(LocalTime.now().plusHours(1)));
+
+        Reserva reserva2 = new Reserva();
+        reserva2.setRecursoId(resourceId);
+        reserva2.setEstado(EstadoTransaccion.activa);
+        reserva2.setFechaReserva(Date.valueOf(LocalDate.now()));
+        reserva2.setHoraInicioReserva(Time.valueOf(LocalTime.now()));
+        reserva2.setHoraFinReserva(Time.valueOf(LocalTime.now().plusHours(1)));
+
+        when(reservaRepository.findByRecursoId(resourceId)).thenReturn(Arrays.asList(reserva1, reserva2));
+
+        List<Reserva> result = bookingManager.getBookingsByResource(resourceId);
+
+        assertEquals(2, result.size());
+        assertEquals(reserva1, result.get(0));
+        assertEquals(reserva2, result.get(1));
     }
 }
