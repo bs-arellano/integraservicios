@@ -45,7 +45,7 @@ public class AuthenticationServiceTest {
     public void signInSuccessfully() {
         doNothing().when(validationService).validateEmail(anyString());
         UsuarioMongo usuarioMongo = UsuarioMongo.builder().email("ud@gmail.com")
-                .usuario_id(1245L).password("password").build();
+                .usuarioId(1245L).password("password").build();
         Usuario usuario = Usuario.builder().usuarioId(1245L).rol("admin").build();
 
         when(userService.findUserByEmail("ud@gmail.com")).thenReturn(usuarioMongo);

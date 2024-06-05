@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "Usuarios")
 @Builder
@@ -13,7 +14,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class UsuarioMongo {
     @Id
     private String id;
-    private Long usuario_id;
+    @Field("usuario_id")
+    private Long usuarioId;
     private String email;
     private String password;
 
@@ -26,11 +28,11 @@ public class UsuarioMongo {
     }
 
     public Long getUsuarioId() {
-        return usuario_id;
+        return usuarioId;
     }
 
     public void setUsuarioId(Long usuario_id) {
-        this.usuario_id = usuario_id;
+        this.usuarioId = usuario_id;
     }
 
     public String getEmail() {
