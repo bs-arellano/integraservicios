@@ -74,7 +74,7 @@ public class UserService {
         // Update email if present and valid
         email.ifPresent(e -> {
             validationService.validateEmail(e);
-            UsuarioMongo usuarioMongo = usuarioMongoRepository.findById(userID.toString())
+            UsuarioMongo usuarioMongo = usuarioMongoRepository.findByUsuarioId(userID)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             usuarioMongo.setEmail(e);
             usuarioMongoRepository.save(usuarioMongo);
@@ -82,7 +82,7 @@ public class UserService {
         // Update password if present and valid
         password.ifPresent(p -> {
             validationService.validatePassword(p);
-            UsuarioMongo usuarioMongo = usuarioMongoRepository.findById(userID.toString())
+            UsuarioMongo usuarioMongo = usuarioMongoRepository.findByUsuarioId(userID)
                     .orElseThrow(() -> new RuntimeException("User not found"));
             String hashedPassword = passwordEncoder.encode(p);
             usuarioMongo.setPassword(hashedPassword);
